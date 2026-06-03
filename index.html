@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greenlight — Trusted AI Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f4ee;--ink:#1c1a17;--muted:#6b6760;--card:#ffffff;--line:#e7e2d8;
+    --green:#1f9d5b;--green-soft:#e4f4ea;--amber:#e0a015;--amber-soft:#fbf0d6;
+    --red:#d64541;--red-soft:#fbe6e3;
+    --shadow:0 1px 2px rgba(28,26,23,.04), 0 12px 32px -12px rgba(28,26,23,.18);
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Hanken Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:24px 16px;
+    background-image:
+      radial-gradient(60vw 50vh at 85% -5%, rgba(31,157,91,.10), transparent 60%),
+      radial-gradient(50vw 45vh at 5% 105%, rgba(224,160,21,.10), transparent 60%);
+    background-attachment:fixed;
+  }
+  .app{width:100%;max-width:480px;position:relative}
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;min-height:560px;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:9px;font-family:'Bricolage Grotesque';font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .signal{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px var(--green-soft);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--green-soft)}50%{box-shadow:0 0 0 7px rgba(31,157,91,.12)}}
+  .progress{display:flex;gap:6px}
+  .pip{width:8px;height:8px;border-radius:50%;background:var(--line);transition:.3s}
+  .pip.done{background:var(--ink)}
+  .pip.active{background:var(--green);transform:scale(1.25)}
+  .stage{flex:1;display:flex;flex-direction:column;padding:24px 22px 26px}
+  .center{align-items:center;justify-content:center;text-align:center;gap:6px}
+  .kicker{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+  h1{font-family:'Bricolage Grotesque';font-weight:800;font-size:42px;line-height:1.02;letter-spacing:-.03em;margin:14px 0 12px}
+  .lede{color:var(--muted);font-size:16px;line-height:1.5;max-width:320px}
+  .meta-row{display:flex;gap:18px;margin:26px 0 30px;color:var(--muted);font-size:13px;font-weight:600}
+  .meta-row b{color:var(--ink);font-family:'Bricolage Grotesque';font-size:22px;display:block;font-weight:800}
+  .meta-row .col{text-align:center}
+  .tag{align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);background:var(--bg);border:1px solid var(--line);padding:5px 11px;border-radius:100px}
+  .scene-title{font-family:'Bricolage Grotesque';font-weight:800;font-size:25px;line-height:1.12;letter-spacing:-.02em;margin:16px 0 12px}
+  .situation{font-size:16.5px;line-height:1.55;color:#37332d}
+  .push{display:flex;gap:11px;margin-top:18px;align-items:flex-start;background:var(--bg);border-radius:16px;padding:13px 15px}
+  .avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque'}
+  .push .who{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:1px}
+  .push .said{font-size:14.5px;line-height:1.4;font-style:italic;color:#37332d}
+  .spacer{flex:1}
+  .choices{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+  .choice{display:flex;align-items:center;gap:13px;width:100%;border:1.5px solid var(--line);background:#fff;
+    border-radius:15px;padding:15px 16px;cursor:pointer;text-align:left;font-family:inherit;font-size:16px;
+    font-weight:600;color:var(--ink);transition:transform .12s, border-color .15s, background .15s}
+  .choice:hover{transform:translateY(-1px)}
+  .choice:active{transform:scale(.985)}
+  .choice .ic{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff}
+  .choice small{display:block;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:1px}
+  .c-green .ic{background:var(--green)} .c-green:hover{border-color:var(--green);background:var(--green-soft)}
+  .c-amber .ic{background:var(--amber)} .c-amber:hover{border-color:var(--amber);background:var(--amber-soft)}
+  .c-red .ic{background:var(--red)} .c-red:hover{border-color:var(--red);background:var(--red-soft)}
+  .c-neutral .ic{background:var(--ink);font-weight:600} .c-neutral:hover{border-color:var(--ink);background:var(--bg)}
+  .probe-q{font-family:'Bricolage Grotesque';font-weight:800;font-size:22px;letter-spacing:-.02em;line-height:1.12;margin-top:4px}
+  .verdict{animation:rise .4s ease both}
+  .vbadge{display:inline-flex;align-items:center;gap:8px;font-family:'Bricolage Grotesque';font-weight:800;font-size:15px;padding:7px 14px;border-radius:100px;letter-spacing:.01em}
+  .v-good{background:var(--green-soft);color:#147a44}
+  .v-bad{background:var(--red-soft);color:#b1322e}
+  .v-meh{background:var(--amber-soft);color:#9a6c06}
+  .reaction{font-size:16px;line-height:1.5;color:#37332d;margin:16px 0 18px}
+  .lessonbox{border-left:3px solid var(--green);background:var(--bg);border-radius:0 14px 14px 0;padding:13px 16px}
+  .lessonbox .pl{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:5px}
+  .lessonbox .lx{font-size:15px;line-height:1.5;color:#2c2925}
+  .rank{font-family:'Bricolage Grotesque';font-weight:800;font-size:34px;letter-spacing:-.025em;line-height:1.05;margin:10px 0 6px}
+  .bigscore{font-family:'Bricolage Grotesque';font-weight:800;font-size:72px;line-height:1;letter-spacing:-.03em;margin:6px 0}
+  .bigscore span{font-size:32px;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0 4px}
+  .chip{font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:100px;display:flex;align-items:center;gap:6px}
+  .chip.m{background:var(--green-soft);color:#147a44}
+  .chip.x{background:var(--red-soft);color:#b1322e}
+  .chips-label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:18px}
+  .btn{width:100%;border:none;border-radius:15px;background:var(--ink);color:#fff;font-family:'Bricolage Grotesque';
+    font-weight:700;font-size:17px;letter-spacing:.01em;padding:16px;cursor:pointer;transition:transform .12s, opacity .2s;margin-top:18px}
+  .btn:hover{transform:translateY(-1px)} .btn:active{transform:scale(.98)}
+  .btn.green{background:var(--green)}
+  .btn.ghost{background:transparent;color:var(--muted);font-size:14px;padding:10px;margin-top:8px}
+  .trust{margin-top:4px}
+  .trust .tl{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .track{height:8px;background:var(--line);border-radius:100px;overflow:hidden}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:100px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .loader{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);font-size:14px;font-weight:600}
+  .spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--green);animation:rot .8s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .rise{animation:rise .45s ease both}
+  .footer{text-align:center;font-size:11px;color:#b6b1a7;padding:12px;font-weight:500}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="signal"></span>Greenlight</div>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div class="stage" id="stage"></div>
+  </div>
+  <div class="footer">Pilot demo · Trusted AI training · powered by live AI</div>
+</div>
+
+<script>
+/* ---------- KPMG's 10 Trusted AI principles (Fairness handled separately in full build) ---------- */
+const PRINCIPLES = [
+  ["Transparency","be open about where and how AI is being used"],
+  ["Explainability","be able to say how and why the AI reached an answer"],
+  ["Accountability","keep a person responsible and in the loop"],
+  ["Data integrity","use data you can trust and are allowed to use"],
+  ["Reliability","make sure it works in real situations, not just tests"],
+  ["Security","protect AI tools and data from misuse and bad actors"],
+  ["Safety","make sure it can't cause harm to people or the business"],
+  ["Privacy","keep people's and clients' information protected"],
+  ["Sustainability","be mindful of energy use and environmental impact"]
+];
+
+const NAMES = "Ryan (man), Adnaan (man), Yeji (woman), Saf (man), Christine (woman), Jerome (man), Gurleen (woman)";
+
+/* ---------- Fallback scenarios: balanced (2 greenlight, 2 flag, 1 block), plain language, no discrimination ---------- */
+const FALLBACK = [
+  {principleName:"Privacy", title:"The Quick Summary", stakeholderName:"Ryan", stakeholderRole:"Account Manager",
+   situation:"Ryan wants to paste a client's signed contract into a free public AI tool to get a quick summary before a 3pm call.",
+   push:"It's just a summary, I'll delete it right after. We're slammed.",
+   correctCall:"block",
+   concern:"Client information could be stored or seen by people outside the company.",
+   distractors:["The summary might miss a few small details.","It could take longer than reading it himself."],
+   lesson:"Anything you paste into a public AI tool can be kept or seen by others. Client info should stay in the tools your company has approved."},
+
+  {principleName:"Security", title:"The Handy Add-On", stakeholderName:"Adnaan", stakeholderRole:"Sales Lead",
+   situation:"Adnaan found a brand-new AI add-on online and wants to give it access to his work email so it can draft replies for him.",
+   push:"It's a huge time-saver. I'll just connect it to my inbox.",
+   correctCall:"flag",
+   concern:"We don't know if the tool is safe or who can read the emails it sees.",
+   distractors:["It might write replies in the wrong tone.","It could come with a monthly fee."],
+   lesson:"New tools that ask to connect to your accounts can leak information or be unsafe. Get it checked before hooking it up to work systems."},
+
+  {principleName:"Accountability", title:"Yeji's Drafts", stakeholderName:"Yeji", stakeholderRole:"Support Manager",
+   situation:"Yeji's team uses AI to draft customer replies, and a person reads and approves every single one before it gets sent.",
+   push:"AI writes the first draft, but I approve each reply myself. Good to keep going?",
+   correctCall:"greenlight",
+   concern:null, distractors:[],
+   lesson:"Letting AI write a first draft is fine when a person checks it and owns what goes out. That's exactly how to use it well."},
+
+  {principleName:"Transparency", title:"Meet the Bot", stakeholderName:"Christine", stakeholderRole:"Web Team",
+   situation:"Christine's new website chatbot tells visitors up front that it's an AI and offers to connect them with a real person anytime.",
+   push:"It says it's AI right away and can hand off to a human. Ready to launch?",
+   correctCall:"greenlight",
+   concern:null, distractors:[],
+   lesson:"Being upfront that someone's talking to AI, and giving them an easy way to reach a person, is the right move. Approve it."},
+
+  {principleName:"Reliability", title:"Aced the Test", stakeholderName:"Saf", stakeholderRole:"Operations",
+   situation:"Saf wants to roll out an AI tool to the whole team tomorrow. It did great on practice questions but hasn't been tried on real work yet.",
+   push:"It nailed every test question. Let's give everyone access now.",
+   correctCall:"flag",
+   concern:"It hasn't been tried on real work yet, so we don't know if it holds up.",
+   distractors:["People might find it boring to use.","It could be hard to log into."],
+   lesson:"Doing well on test questions isn't the same as working in the real world. Try it on real cases with a few people before everyone relies on it."}
+];
+
+const CALLS = {
+  greenlight:{label:"Greenlight",sub:"Approve it as-is",cls:"c-green",ic:"\u2713",rank:0},
+  flag:{label:"Flag",sub:"Approve, but get it checked first",cls:"c-amber",ic:"\u2691",rank:1},
+  block:{label:"Block",sub:"Stop it from going ahead",cls:"c-red",ic:"\u2715",rank:2}
+};
+
+let scenarios=[], idx=0, score=0, results=[];
+const stage=document.getElementById('stage');
+const progressEl=document.getElementById('progress');
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+async function callClaude(messages, system){
+  const res=await fetch("/api/claude",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({messages,system})
+  });
+  const data=await res.json();
+  return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+}
+function extractJSON(txt){
+  let t=txt.replace(/```json/gi,"").replace(/```/g,"").trim();
+  const s=t.indexOf("{"), e=t.lastIndexOf("}");
+  if(s>=0&&e>=0) t=t.slice(s,e+1);
+  return JSON.parse(t);
+}
+async function generateScenarios(){
+  const plist=PRINCIPLES.map(p=>p[0]+": "+p[1]).join("\n");
+  const system="You write short, realistic scenarios for a workplace AI-safety training game at a company that recently started using AI. "+
+    "Base each scenario on one of these ideas:\n"+plist+
+    "\n\nWrite in plain, everyday language, like a helpful coworker talking. No corporate or technical jargon (avoid words like lifecycle, guardrails, governance, thresholds, compliant). "+
+    "Use ONLY these employee names, one per scenario, keeping gender consistent if you mention it: "+NAMES+". "+
+    "Never write about bias or discrimination against any person or group (nothing about race, gender, sexual orientation, age, income, or location). "+
+    "Use Canadian spelling and terms (colour, favourite, postal code, university), but keep American -ize endings (prioritize, organize, not prioritise). "+
+    "\n\nReturn ONLY valid JSON, no markdown, no preamble. Shape:\n"+
+    '{"scenarios":[{"principleName":"<idea name>","title":"<=4 words","stakeholderName":"<one of the names>","stakeholderRole":"<short role>","situation":"<=40 words, a concrete dilemma about using AI at work>","push":"<=18 words, the person pushing for it, in character>","correctCall":"greenlight|flag|block","concern":"<for flag/block only: the real issue in <=14 words, else null>","distractors":["<wrong concern>","<wrong concern>"],"lesson":"<=28 words, the takeaway in plain words"}]}'+
+    "\nRules: exactly 5 scenarios, 5 different ideas. EXACTLY 2 must be greenlight (a responsible, well-handled use that should simply be approved), with at least 1 flag and at least 1 block among the rest. "+
+    "Greenlight scenarios set concern to null and distractors to []. Flag and block scenarios must include a real concern plus two believable wrong concerns.";
+  const txt=await callClaude([{role:"user",content:"Generate a fresh set of 5 scenarios."}],system);
+  const obj=extractJSON(txt);
+  if(!obj.scenarios||!obj.scenarios.length) throw new Error("bad shape");
+  return obj.scenarios.slice(0,5).map(s=>{
+    const call=["greenlight","flag","block"].includes(s.correctCall)?s.correctCall:"flag";
+    let concern = (call!=="greenlight" && s.concern) ? s.concern : null;
+    let distractors = Array.isArray(s.distractors)? s.distractors.filter(Boolean).slice(0,2) : [];
+    if(concern && distractors.length<2){
+      const pad=["It might take a little longer.","It could cost a bit more."];
+      while(distractors.length<2) distractors.push(pad[distractors.length]);
+    }
+    return {principleName:s.principleName||"Trusted AI", title:s.title||"Your Call",
+      stakeholderName:s.stakeholderName||"Ryan", stakeholderRole:s.stakeholderRole||"Colleague",
+      situation:s.situation||"", push:s.push||"", correctCall:call, concern, distractors,
+      lesson:s.lesson||""};
+  });
+}
+
+function reaction(sc, call){
+  const diff=CALLS[call].rank-CALLS[sc.correctCall].rank;
+  const who=sc.stakeholderName;
+  if(diff===0) return {tone:"good",badge:"Right call \u2713",
+    line:`Nicely read. ${who} respects the call, and this is the kind of judgement people trust.`};
+  if(diff<0) return {tone:"bad",badge:"Too risky",
+    line:`You let it through. ${who} is happy in the moment, but this is exactly where things go wrong later.`};
+  return {tone:"meh",badge:"Overcautious",
+    line:`You stopped it harder than needed. ${who} is stuck on something that could have moved with a quick check first.`};
+}
+
+function renderProgress(){
+  progressEl.innerHTML="";
+  for(let i=0;i<5;i++){
+    const d=document.createElement('div');
+    d.className="pip"+(i<idx?" done":i===idx?" active":"");
+    progressEl.appendChild(d);
+  }
+}
+function startScreen(){
+  idx=0;score=0;results=[];renderProgress();
+  stage.className="stage center";
+  stage.innerHTML=`
+    <div class="rise">
+      <div class="kicker">Trusted AI · 2 minutes</div>
+      <h1>Ready to be<br>trusted with AI?</h1>
+      <p class="lede">Your company put AI in everyone's hands. Before you run with it, prove you can be trusted with it. Five calls: greenlight, flag, or block.</p>
+      <div class="meta-row">
+        <div class="col"><b>5</b>decisions</div>
+        <div class="col"><b>~2</b>minutes</div>
+        <div class="col"><b>1</b>you</div>
+      </div>
+      <button class="btn green" id="go">Start the challenge</button>
+    </div>`;
+  document.getElementById('go').onclick=begin;
+}
+async function begin(){
+  stage.className="stage";
+  stage.innerHTML=`<div class="loader" style="flex:1;justify-content:center"><div class="spin"></div><div>Pulling today's calls\u2026</div></div>`;
+  try{ scenarios=await generateScenarios(); }catch(e){ scenarios=FALLBACK.slice(); }
+  idx=0;score=0;results=[];
+  showScenario();
+}
+function showScenario(){
+  renderProgress();
+  const sc=scenarios[idx];
+  stage.className="stage";
+  stage.innerHTML=`
+    <div class="rise">
+      <span class="tag">Round ${idx+1} of 5</span>
+      <div class="scene-title">${sc.title}</div>
+      <p class="situation">${sc.situation}</p>
+      ${sc.push?`<div class="push"><div class="avatar">${(sc.stakeholderName||"?").slice(0,1)}</div>
+        <div><div class="who">${sc.stakeholderName} · ${sc.stakeholderRole}</div>
+        <div class="said">"${sc.push}"</div></div></div>`:""}
+    </div>
+    <div class="spacer"></div>
+    <div class="choices rise" id="choices"></div>`;
+  const wrap=document.getElementById('choices');
+  ["greenlight","flag","block"].forEach(k=>{
+    const c=CALLS[k];
+    const b=document.createElement('button');
+    b.className="choice "+c.cls;
+    b.innerHTML=`<span class="ic">${c.ic}</span><span>${c.label}<small>${c.sub}</small></span>`;
+    b.onclick=()=>choose(k);
+    wrap.appendChild(b);
+  });
+}
+function choose(call){
+  const sc=scenarios[idx];
+  if(call==="flag" && sc.concern){ probeScreen(call); return; }
+  resolve(call,null);
+}
+function probeScreen(call){
+  const sc=scenarios[idx];
+  const opts=shuffle([sc.concern, ...sc.distractors]);
+  stage.className="stage";
+  stage.innerHTML=`
+    <div class="rise">
+      <span class="tag">Round ${idx+1} of 5 · Investigate</span>
+      <div class="probe-q">You flagged it. What's the real concern?</div>
+      <p class="situation" style="font-size:14.5px;color:var(--muted);margin-top:10px">Pick the issue most worth raising before this goes ahead.</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="choices rise" id="opts"></div>`;
+  const wrap=document.getElementById('opts');
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className="choice c-neutral";
+    b.innerHTML=`<span class="ic">\u203A</span><span>${o}</span>`;
+    b.onclick=()=>resolve(call,o);
+    wrap.appendChild(b);
+  });
+}
+function resolve(call, probePick){
+  const sc=scenarios[idx];
+  const r=reaction(sc,call);
+  const correct=(r.tone==="good");
+  if(correct) score++;
+  results.push({principleName:sc.principleName, correct});
+  if(probePick!==null){
+    if(probePick===sc.concern) r.line+=" And you put your finger on the real concern. Sharp.";
+    else r.line+=" The issue most worth raising: "+sc.concern;
+  }
+  const badgeCls=r.tone==="good"?"v-good":r.tone==="bad"?"v-bad":"v-meh";
+  stage.className="stage";
+  stage.innerHTML=`
+    <div class="verdict">
+      <span class="tag">Round ${idx+1} of 5</span>
+      <div class="scene-title" style="margin-bottom:14px">${sc.title}</div>
+      <span class="vbadge ${badgeCls}">${r.badge}</span>
+      <p class="reaction">${r.line}</p>
+      <div class="lessonbox"><div class="pl">${sc.principleName}</div><div class="lx">${sc.lesson}</div></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="trust rise">
+      <div class="tl"><span>Trust earned</span><span>${score} / 5</span></div>
+      <div class="track"><div class="fill" id="fill"></div></div>
+    </div>
+    <button class="btn rise" id="next">${idx===4?"See your result":"Next call"}</button>`;
+  setTimeout(()=>{document.getElementById('fill').style.width=(score/5*100)+"%";},60);
+  document.getElementById('next').onclick=()=>{ idx++; if(idx>=5) endScreen(); else showScenario(); };
+}
+function rankFor(s){
+  if(s===5) return ["Trusted AI Steward","You make the call others can rely on. Certified."];
+  if(s===4) return ["Trusted AI Pro","Sharp judgement, one slip. You're nearly there."];
+  if(s===3) return ["On Your Way","Good instincts, a couple of blind spots to close."];
+  if(s===2) return ["Needs a Refresher","The ideas aren't sticking yet. Worth another run."];
+  return ["Risky Hands","Time to slow down and learn where the lines are."];
+}
+function endScreen(){
+  renderProgress();
+  progressEl.querySelectorAll('.pip').forEach(p=>{p.className="pip done"});
+  const [rank,blurb]=rankFor(score);
+  const mastered=results.filter(r=>r.correct).map(r=>r.principleName);
+  const missed=results.filter(r=>!r.correct).map(r=>r.principleName);
+  stage.className="stage center";
+  stage.innerHTML=`
+    <div class="rise" style="width:100%">
+      <div class="kicker">Result</div>
+      <div class="bigscore">${score}<span>/5</span></div>
+      <div class="rank">${rank}</div>
+      <p class="lede" style="margin:0 auto">${blurb}</p>
+      ${mastered.length?`<div class="chips-label">You got these right</div>
+        <div class="chips">${mastered.map(m=>`<span class="chip m">\u2713 ${m}</span>`).join("")}</div>`:""}
+      ${missed.length?`<div class="chips-label">Worth another look</div>
+        <div class="chips">${missed.map(m=>`<span class="chip x">\u2715 ${m}</span>`).join("")}</div>`:""}
+      <button class="btn green" id="again">${missed.length?"Replay & close the gaps":"Play a fresh set"}</button>
+      <button class="btn ghost" id="restart">Back to start</button>
+    </div>`;
+  document.getElementById('again').onclick=begin;
+  document.getElementById('restart').onclick=startScreen;
+}
+startScreen();
+</script>
+</body>
+</html>
