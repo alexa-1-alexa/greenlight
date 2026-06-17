@@ -2,7 +2,7 @@
 
 **Can a two-minute game teach AI safety better than a thirty-minute video? This is a bet that it can.**
 
-🔗 **Live demo:** [your-vercel-url-here](https://) · ⏱️ ~2 minutes · 📱 works on mobile
+🔗 **Live demo:** (https://greenlight-six-mocha.vercel.app) · ⏱️ ~2 minutes · 📱 works on mobile
 
 Greenlight is a playable AI-safety training module. Instead of reading principles, you apply them: you play the person who decides whether a use of AI at work is trustworthy, and call it **Greenlight**, **Flag**, or **Block**. Every scenario is generated live and graded on the spot.
 
