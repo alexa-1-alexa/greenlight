@@ -37,4 +37,4 @@ HTML · CSS · vanilla JavaScript · a serverless function · the Claude API
 
 ---
 
-Built by Cleo. Feedback and ideas welcome.
+Built by Alexa! Feedback and ideas welcome.
